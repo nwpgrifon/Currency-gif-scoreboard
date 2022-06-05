@@ -27,12 +27,7 @@ public class RatesDeserializer extends StdDeserializer<Rates> {
     @Override
     public Rates deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
-        LocalDate currentDate = LocalDate.now();
-        LocalDate yesterday = currentDate.minus(1, ChronoUnit.DAYS);
-        JsonNode jsonNodeToday = node.get(currentDate.toString());
-        JsonNode jsonNodeYesterday = node.get(yesterday.toString());
-        BigDecimal todayExchangeRate = jsonNodeToday.get(CurrencyService.currencyCodeStorage.get()).decimalValue();
-        BigDecimal yesterdayExchangeRate = jsonNodeYesterday.get(CurrencyService.currencyCodeStorage.get()).decimalValue();
-        return new Rates(yesterdayExchangeRate, todayExchangeRate);
+        BigDecimal exchangeRate = node.get(CurrencyService.currencyCodeStorage.get()).decimalValue();
+        return new Rates(exchangeRate);
     }
 }

@@ -1,20 +1,27 @@
 package ru.alfabank.service;
 
+import lombok.Setter;
 import org.apache.tomcat.jni.Local;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.alfabank.client.GiphyClient;
 import ru.alfabank.client.OXRClient;
+import ru.alfabank.dto.Gif;
 import ru.alfabank.dto.OxrResponse;
 import ru.alfabank.dto.Rates;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Random;
 
 @Service
 public class CurrencyService {
 
-    public static ThreadLocal<String> currencyCodeStorage;
+
+    public static ThreadLocal<String> currencyCodeStorage = new ThreadLocal<>();;
 
 
     private static final String BROKE = "broke";
@@ -38,9 +45,12 @@ public class CurrencyService {
 
 
     public String getGifForCurrency(String currencyCode) { // TODO currency code validator
+        Random rand = new Random();
         currencyCodeStorage.set(currencyCode);
         boolean amIrich = calculateXRDifference(currencyCode);
-        return giphyClient.getGif(giphyApiKey, amIrich ? RICH : BROKE).getData().get(0).getUrl();
+        List<Gif> gifs = giphyClient.getGif(giphyApiKey, amIrich ? RICH : BROKE).getData();
+        int randomGif = rand.nextInt(gifs.size());
+        return gifs.get(randomGif).getUrl();
     }
 
 
@@ -48,8 +58,10 @@ public class CurrencyService {
     private boolean calculateXRDifference(String current) {
         LocalDate currentDate = LocalDate.now();
         LocalDate yesterday = currentDate.minus(1, ChronoUnit.DAYS);
-        OxrResponse exchangeRates = oxrClient.getExchangeRates(oxrAppId, currentDate.toString(), yesterday.toString(), current);
-        Rates rates = exchangeRates.getRates();
-        return rates.getTodaysER().compareTo(rates.getYesterdaysER()) > 0;
+        OxrResponse exchangeRatesToday = oxrClient.getExchangeRatesForToday(oxrAppId);
+        OxrResponse exchangeRatesYesterday = oxrClient.getExchangeRatesForYesterday(yesterday.toString(), oxrAppId);
+        Rates ratesToday = exchangeRatesToday.getRates();
+        Rates ratesYesterday = exchangeRatesYesterday.getRates();
+        return ratesToday.getExchangeRate().compareTo(ratesYesterday.getExchangeRate()) > 0;
     }
 }
