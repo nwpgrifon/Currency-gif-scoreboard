@@ -1,12 +1,7 @@
 package ru.alfabank;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.matching.ContainsPattern;
-import com.github.tomakehurst.wiremock.matching.StringValuePattern;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.alfabank.client.GiphyClient;
-import ru.alfabank.client.OXRClient;
 import ru.alfabank.dto.Gif;
 import ru.alfabank.dto.GiphyResponse;
 import ru.alfabank.dto.OxrResponse;
@@ -27,14 +20,12 @@ import ru.alfabank.service.CurrencyService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureWireMock(port = 0)
 @TestPropertySource(properties = {"giphy.host= http://localhost:${wiremock.server.port}"})
-public class FirstTest {
+public class IntegrationTest {
 
 
     @Value("${giphy.api_key}")
