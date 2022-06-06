@@ -1,10 +1,6 @@
 package ru.alfabank.service;
 
-import lombok.Setter;
-import org.apache.tomcat.jni.Local;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.alfabank.client.GiphyClient;
 import ru.alfabank.client.OXRClient;
@@ -24,8 +20,8 @@ public class CurrencyService {
     public static ThreadLocal<String> currencyCodeStorage = new ThreadLocal<>();;
 
 
-    private static final String BROKE = "broke";
-    private static final String RICH = "rich";
+    public static final String BROKE = "broke";
+    public static final String RICH = "rich";
     @Value("${giphy.api_key}")
     private String giphyApiKey;
 
