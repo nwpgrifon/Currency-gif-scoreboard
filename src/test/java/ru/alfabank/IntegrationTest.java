@@ -85,7 +85,7 @@ public class IntegrationTest {
 
     @Test
     void testRich() throws Exception {
-        GiphyResponse giphyResponse = buildGiphyResponse(GET_URLS_RICH);
+        GiphyResponse giphyResponse = buildGiphyResponse(GIF_URLS_RICH);
         OxrResponse oxrResponseToday = buildOxrResponse(new BigDecimal(12));
         OxrResponse oxrResponseYesterday = buildOxrResponse(new BigDecimal(2));
 
