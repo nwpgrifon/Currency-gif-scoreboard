@@ -83,6 +83,39 @@ public class IntegrationTest {
 
     }
 
+    @Test
+    void testRich() throws Exception {
+        GiphyResponse giphyResponse = buildGiphyResponse(GET_URLS_RICH);
+        OxrResponse oxrResponseToday = buildOxrResponse(new BigDecimal(12));
+        OxrResponse oxrResponseYesterday = buildOxrResponse(new BigDecimal(2));
+
+        LocalDate currentDate = LocalDate.now();
+        LocalDate yesterday = currentDate.minus(1, ChronoUnit.DAYS);
+
+
+
+
+
+        WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/v1/gifs/search")).withQueryParams(Map.of("q", equalTo(CurrencyService.RICH), "api_key", equalTo(giphyApiKey)))
+                .willReturn(ok().withBody(objectMapper.writeValueAsString(giphyResponse)).withHeader("Content-Type", "application/json;charset=UTF-8")));
+
+        WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/api/latest.json"))
+                .willReturn(ok().withBody(objectMapper.writeValueAsString(oxrResponseToday)).withHeader("Content-Type", "application/json;charset=UTF-8")));
+
+        WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/api/historical/" + yesterday.toString() +".json"))
+                .willReturn(ok().withBody(objectMapper.writeValueAsString(oxrResponseYesterday)).withHeader("Content-Type", "application/json;charset=UTF-8")));
+
+
+        String url = mockMvc.perform(get("/currency/RUB"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+
+        assertTrue(GIF_URLS_RICH.contains(url));
+
+
+    }
+
     private static List<String> GIF_URLS_RICH = List.of("URL1", "URL2", "URL3", "URL4", "URL5");
     private static List<String> GIF_URLS_BROKE = List.of("URL6", "URL7", "URL8", "URL9", "URL10");
 
