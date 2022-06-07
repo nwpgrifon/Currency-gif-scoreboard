@@ -1,7 +1,10 @@
 package ru.alfabank;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,12 +36,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @AutoConfigureMockMvc
 @AutoConfigureWireMock(port = 0)
-@TestPropertySource(properties = {"giphy.host= http://localhost:${wiremock.server.port}"})
+@TestPropertySource(properties = {"giphy.host= http://localhost:${wiremock.server.port}", "oxr.host = http://localhost:${wiremock.server.port}"})
 public class IntegrationTest {
 
 
     @Value("${giphy.api_key}")
-
     private String giphyApiKey;
 
     @Autowired
@@ -46,6 +48,14 @@ public class IntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void beforeAll () {
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Rates.class, new RatesSerializer());
+        objectMapper.registerModule(module);
+
+    }
 
 
 
